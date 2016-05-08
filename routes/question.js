@@ -145,4 +145,80 @@ router.post('/delete', function(req, res) {
 });
 
 
+//check the email format
+var isemail = function(str) {   
+    var re = /^([a-za-z0-9]+[_|-|.]?)*[a-za-z0-9]+@([a-za-z0-9]+[_|-|.]?)*[a-za-z0-9]+.[a-za-z]{2,3}$/;   
+    return re.test(str);   
+};  
+
+// send the email in the end of the question
+router.post('/sendmail', function(req, res) {
+    console.log('entered post question sendemail!');
+    console.log(req.body);
+    var sess = req.session;
+    var sid = req.sessionID;
+    
+    var end = req.body.question;
+    var contact_email = req.body.contact_email;
+    var ret = {};
+    
+    //if the email format is incorrect, return error    
+    if(!isemail(contact_email)){
+        ret.status = 'error'
+        ret.errorno = 1; //the email format is incorrect.
+        res.json(ret);
+    }
+            
+    Question.findOne({'question': end}, function (err, record) {
+        if (err) return handleError(err);
+        if (!record) {
+            ret.status = "error";
+            ret.errorno = 2;  //"this question does not exist."
+            res.json(ret);
+        }
+        else{
+            
+            var nodemailer = require("nodemailer");
+            var smtpTransport = require('nodemailer-smtp-transport');
+
+            // 开启一个 SMTP 连接池
+            var transport = nodemailer.createTransport(smtpTransport({
+            host: "smtp.qq.com", // 主机
+            secure: true, // 使用 SSL
+            port: 465, // SMTP 端口
+            auth: {
+                user: "914238649@qq.com", // 账号
+                pass: "Huanyu@0519" // 密码
+            }
+            }));
+
+            // 设置邮件内容
+            var mailOptions = {
+            from: "RegulationBot <914238649@qq.com>", // 发件地址
+            to: contact_email, // 收件列表
+            subject: "Answer from RegulationBot", // 标题
+            html: record.email // email 内容
+            }
+
+            // 发送邮件
+            transport.sendMail(mailOptions, function(error, response) {
+                if (error) {
+                    console.error(error);
+                    //return error
+                    ret.status = "error";
+                    ret.errorno = 3;  //fail to send email
+                    res.json(ret);
+                } else {
+                    console.log(response);
+                    //return success
+                    ret.status = "success";
+                    ret.errorno = 0;  //success
+                    res.json(ret);
+                }
+            transport.close(); // 如果没用，关闭连接池
+            });                      							   
+        }
+    }); 
+ });
+
 module.exports = router;

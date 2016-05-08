@@ -20,6 +20,8 @@
     "method-override" : "latest",
     "request": "~2.67.0",
     "mongoose": "latest",
-    "mongoose-unique-validator" : "latest"
+    "mongoose-unique-validator" : "latest",
+    "nodemailer": "latest",
+    "nodemailer-smtp-transport" : "latest"
   }
 }

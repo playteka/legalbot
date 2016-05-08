@@ -15,7 +15,7 @@
  */
 
 'use strict';
-
+ 
 $(document).ready(function() {
   var context = '/proxy/api';
   var dialogs = [];
@@ -177,9 +177,36 @@ $(document).ready(function() {
                 $('<p class="chat-watson"/>')
                   .html($('<div/>').html(text).text())
                   .appendTo($conversation);
-                
                 getProfile();
                 scrollToBottom();
+                
+                //if the question starts with 'E', send the email
+                var end = record.question;
+                var contact_email = $("#contact_email").val().trim();
+                if( end.charAt(0)=='E'){
+                    console.log('the end. before sending email to: '+contact_email);
+                    //checkout the question record from db
+                    $.post("/question/sendmail", {"question": end, "contact_email":contact_email})
+                    .done(function(result) {
+                        var sendemail_info = "The end";
+                        if (result.errorno == 0) {
+                            sendemail_info = "RegulationBot has sent an email to you, please check.";
+                        } 
+                        else if(result.errorno == 1) {
+                            sendemail_info = "The email address is invalid, please modify it.";
+                        }
+                        else if(result.errorno == 2){
+                            sendemail_info = "System error, the question does not exist.";
+                        }
+                        else if(result.errorno == 3){
+                            sendemail_info = "System error: Fail to send the email.";
+                        } 
+                        console.log(sendemail_info);          
+                        $('<p class="chat-watson"/>')
+                          .html($('<div/>').html(sendemail_info).text())
+                          .appendTo($conversation);               
+                    });
+                }
             }
         }).
         fail(function() {
