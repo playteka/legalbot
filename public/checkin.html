@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Question Checkin</title>
+    <meta charset="utf-8"> 
+    
+   <!-- jQuery library -->
+   <script src="https://code.jquery.com/jquery-1.12.3.min.js" integrity="sha256-aaODHAgvwQW1bFOGXMeX+pC4PZIPsvn2h1sArYOhgXQ=" crossorigin="anonymous"></script>
+    
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+    <!-- Latest compiled JavaScript -->
+    <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    
+    <script type="text/javascript">
+    
+String.prototype.trim = function() {
+    //去掉两边的空格
+    return this.replace(/(^\s*)|(\s*$)/g, '');
+};
+
+//字符串首尾加单引号
+var QM = function(s) {
+    return "'" + s + "'";
+};
+//字符串首尾加双引号
+var DQM = function(s) {
+    return '"' + s + '"';
+};
+    
+var add_line = function(record) {
+    var _id = record._id;
+    var question = record.question;
+    var yes = record.yes;
+    var no = record.no;
+    var text = record.text;
+    
+    var htmlcode = '<tr id="' + _id + '">';
+    htmlcode += '<td><a onclick="openQuestion(' + QM(_id ) + ')"><h4 class="list-group-item-heading">' + question + '</h4></a></td>';
+    //playdrawing has no ipaddress
+    htmlcode += '<td align="right"><h4 class="list-group-item-heading">' + yes + '</h4></td>';
+    htmlcode += '<td align="right"><h4 class="list-group-item-heading">' + no + '</h4></td>';
+    htmlcode += '<td align="right"><span class="glyphicon glyphicon-trash" onclick="deleteQuestion(' + QM(_id) + ')"></span></td>';
+    htmlcode += '</tr>';
+    $("#question_table").prepend(htmlcode);
+};
+
+var add_all_question = function() {
+    //insert all question into the table
+    var posting = $.post("/question/all");
+    posting.done(function(result) {
+        console.log(result);
+        if (result.status == 'error') {
+            alert('operation error');
+        } else {
+            var question_list = result.body;
+            for (var i=question_list.length-1; i>=0; i--) {
+                //alert(JSON.stringify(project_list[i]));
+                add_line(question_list[i]);
+            }
+        }
+    }).
+    fail(function() {
+        alert("<%=lang.network_failed%>");
+    });
+}
+
+var openQuestion = function(_id) {
+    var posting = $.post("/question/open", {
+        "_id": _id
+    });
+    posting.done(function(result) {
+        if (result.status == "error") {
+            alert("This item couldn't be opened");
+            window.location.reload();
+        } else {
+            console.log(result);
+            //set the question values
+            $("#question").val(result.body.question);
+            $("#yes").val(result.body.yes);
+            $("#no").val(result.body.no);
+            $("#text").val(result.body.text); 
+            $("#email").val(result.body.email);  
+        }
+    }).
+    fail(function() {
+        alert("network failed");
+    });
+};
+
+var deleteQuestion = function(_id) {
+    if (confirm("Do you want to delete this item?") == false) return;
+    var posting = $.post("/question/delete", {
+        "_id": _id
+    });
+    posting.done(function(result) {
+        console.log(result);
+        if (result.status == "error") {
+            alert("This item couldn't be delelted!");
+            window.location.reload();
+        } else {
+            alert("This item has been delelted!");
+            window.location.reload();
+        }
+    }).
+    fail(function() {
+        alert("network failed");
+    });
+};
+
+
+    $(document).ready(function(){
+        //alert('ready!');
+        
+        $("#ok").click(function(){
+            var data = {};
+            data.question = $("#question").val().trim();
+            data.yes = $("#yes").val().trim();
+            data.no = $("#no").val().trim();
+            data.text = $("#text").val();
+            data.email = $("#email").val();
+            console.log(data);
+            
+            //checkout the question record from db
+            $.post("/question/checkin", data)
+            .done(function(result) {
+                //alert("数据：" + JSON.stringify(result.body) + "\n状态：" + result.status + result.errorno);
+
+                if (result.status == "add") {
+                        alert('added a new question');    
+                        window.location.reload();           
+                } 
+                else if(result.status == "update"){ 
+                        alert('updated a question');  
+                        window.location.reload();   
+                }
+                else{
+                    alert('operation failed');   
+                }
+            }).
+            fail(function() {
+                alert("network failed");
+            });           
+        });
+        
+        //populate all questions
+        add_all_question();
+        
+    });
+    
+
+
+    
+    </script>
+    
+</head>
+
+<body>
+    
+    <div class="container" id='app'>
+        <h1>Question input</h1>
+        <div class="row">
+            <div class="col-sm-6">
+                <table class = "table table-striped table-hover" id = "title_table">
+                    <tr>
+                        <td align="left" ><h4 class="list-group-item-heading">Question</h4></td>
+                        <td align="right"><h4 class="list-group-item-heading">Yes</h4></td>
+                        <td align="right"><h4 class="list-group-item-heading">No</h4></td>
+                        <td align="right"><h4 class="list-group-item-heading">Delete</h4></td>
+                </table> 
+                <table class = "table table-striped table-hover" id = "question_table">
+                </table>
+                <br>
+                <a href="/botxml/combot.xml" class="btn btn-info" download>Download</a>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">                  
+                <label for="question">question:</label>
+                <input type="text" class="form-control" id="question">
+                <br>
+                
+                <label for="yes">yes:</label>
+                <input type="text" class="form-control" id="yes">
+                <br>
+                
+                <label for="no">no:</label>
+                <input type="text" class="form-control" id="no">
+                <br>
+                
+                <label for="text">text:</label>
+                <textarea class="form-control" rows="5" id="text"></textarea>
+                <br>
+                
+                <label for="text">EMail:</label>
+                <textarea class="form-control" rows="5" id="email"></textarea>
+                <br>
+                
+                <button type="button" class="btn btn-primary" id="ok">Submit</button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                
+            </div>  
+        </div>
+    </div>
+</body>
+</html>

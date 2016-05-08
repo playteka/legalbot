@@ -1,0 +1,758 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- New XML document created with EditiX XML Editor (http://www.editix.com) at Sat Apr 09 07:51:22 CEST 2016 -->
+
+<dialog xsi:noNamespaceSchemaLocation="WatsonDialogDocument_1.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <flow>
+    <folder label="Main">
+            <output>
+                <prompt selectionType="RANDOM">
+                    <item>Hello, welcome to Legalbot!</item>
+                </prompt>
+                <goto ref="output_Q1"/>
+            </output>
+        </folder>
+        
+        <folder label="Library">
+        <folder label="Q1">
+                <output id="output_Q1">
+                    <prompt >
+                        	<item>Are any of the following statements true? &lt;br&gt;
+a)Your entity is a US banking entity; or    &lt;br&gt;
+b)your entity is controlled directly or indirectly by a US banking entity. </item>
+		</prompt>
+                    <getUserInput>
+                        <input>
+                            <grammar>
+                                <item>$ Yes</item>
+                            </grammar>
+                            <action varName="is_US_bank" operator="SET_TO">YES</action>
+                            <goto ref="output_Q3"/>
+                        </input>
+                        <input>
+                            <grammar>
+                                <item>$ No</item>
+                            </grammar>
+                            <action varName="is_US_bank" operator="SET_TO">NO</action>
+                            <goto ref="output_Q2"/>
+                        </input>                      
+                        <default>
+            		<output>
+                			<prompt selectionType="RANDOM">
+                    			<item>
+                        		I am sorry, I did not understand
+                        		your question. Would you please clearly answer Yes or No?
+                    			</item>
+                			</prompt>
+            		</output>
+            		<goto ref="output_Q1"/>
+        		</default>
+                    </getUserInput>
+                </output>
+            </folder> <!-- folder Q1 -->
+            
+            <folder label="Q2">
+                <output id="output_Q2">
+                    <prompt selectionType="RANDOM">
+                        <item>Are all of the following statements true?
+The Issuer:
+a)is a non-US entity; and
+b)it does not offer, and has never before offered or sold any securities in the US; and
+c)it does not offer, and has never before offered or sold any securities to US persons; and
+d)any decision by your entity to invest in the Issuer’s securities are made outside the US; and
+e)the Issuer is not structured with the purpose of avoiding US securities laws. </item>
+                    </prompt>
+                    <getUserInput>
+                        <input>
+                            <grammar>
+                                <item>$ Yes</item>
+                            </grammar>
+                            <output>
+                		<prompt selectionType="RANDOM">
+                    			<item>
+Bot’s response:
+2. Generate confirmation (with a reference number) that the information has been forwarded to [internal control department/ compliance department] for validation and authorization, stating that the respondent will receive an answer shortly.
+</item>
+                		</prompt>
+                		<action varName="is_security" operator="SET_TO">YES</action>                           
+                            	<goto ref="output_end"/>
+                	    </output>
+                        </input>
+                        <input>
+                            <grammar>
+                                <item>$ No</item>
+                            </grammar>
+                            <action varName="is_security" operator="SET_TO">NO</action>
+                            <goto ref="output_Q3"/>
+                        </input>                      
+                        <default>
+            		<output>
+                			<prompt selectionType="RANDOM">
+                    			<item>
+                        		I am sorry, I did not understand
+                        		your question. Would you please clearly answer Yes or No?
+                    			</item>
+                		</prompt>
+            		</output>
+        		</default>
+                    </getUserInput>
+                </output>
+            </folder> <!-- folder Q2 -->
+            
+            <folder label="Q3">
+                <output id="output_Q3">
+                    <prompt selectionType="RANDOM">
+                        <item>Are all of the following statements true?
+The Issuer:
+f)is an Issuer of securities; and
+g)its main business is to invest, reinvest or trade in securities, or it holds itself out as doing so; or
+h)it (i) issues face-amount certificates on an instalment basis, (ii) proposes to do so, or (iii) has done so in the past and has any such certificates outstanding; or
+i)it (i) invests, reinvests, owns, holds or trades in securities and owns investment securities that exceed in value 40% of the Issuer’s total assets (minus any Government securities and cash items) on an unconsolidated basis, or (ii) proposes to do so.</item>
+                    </prompt>
+                    <getUserInput>
+                        <input>
+                            <grammar>
+                                <item>$ Yes</item>
+                            </grammar>
+                            <action varName="is_security_and" operator="SET_TO">YES</action>
+                            <goto ref="output_Q4"/>
+                        </input>
+                        <input>
+                            <grammar>
+                                <item>$ No</item>
+                            </grammar>
+                            <action varName="is_security_and" operator="SET_TO">NO</action>
+                            <goto ref="output_Q9"/>
+                        </input>                      
+                        <default>
+            		<output>
+                			<prompt selectionType="RANDOM">
+                    			<item>
+                        		I am sorry, I did not understand
+                        		your question. Would you please clearly answer Yes or No?
+                    			</item>
+                			</prompt>
+            		</output>
+            		<goto ref="output_Q1"/>
+        		</default>
+                    </getUserInput>
+                </output>
+            </folder>
+            
+            <folder label="Q4">
+                <output id="output_Q4">
+                    <prompt selectionType="RANDOM">
+                        <item>Is the Issuer registered as an Investment Company in the US?</item>
+                    </prompt>
+                    <getUserInput>
+                        <input>
+                            <grammar>
+                                <item>$ Yes</item>
+                            </grammar>
+                            <output>
+                		<prompt selectionType="RANDOM">
+                    			<item>1. pop-up or new screen with form requesting:
+full legal name of Issuer;
+Legal Entity Identifier of Issuer; and
+documentation in support [to be attached] (including Issuer registration number, offering documents, communications with, or certificates from the Issuer or its manager).
+2. Generate confirmation (with a reference number) that the information has been forwarded to [internal control department/ compliance department] for validation and authorization, stating that the respondent will receive an answer shortly.
+3. An automatic email is generated with the information in 1 attached and sent to [internal control department/ compliance department] with the title “Covered Funds Control: Permitted Investment (Not a Covered Fund: Registered Investment Company)” and the following paragraph in the body:
+“[Name] ([email address]), from [Unit, Department or Trading Desk] (the “Requester”) requests authorization to transact with [full legal name of Issuer], LEI [Legal Entity Identifier of Issuer] (“Issuer”), on the basis that the Issuer is an investment company registered as such in the US and is therefore not a covered fund pursuant to the Volcker Rule.
+Evidence in support attached.
+Ref.[reference number here]”
+4. If the evidence in support is correct and sufficient and there are no other reasons to deny the request, the [internal control department/compliance department] should authorize the transaction. Perhaps to do that the automatically generated email will have “authorize”/”deny” buttons that will trigger an automatic response to the requester and their boss?</item>
+                		</prompt>
+                		<action varName="is_registered_in_US" operator="SET_TO">YES</action>                           
+                            	<goto ref="output_end"/>
+                	    </output>
+                        </input>
+                        <input>
+                            <grammar>
+                                <item>$ No</item>
+                            </grammar>
+                            <action varName="is_registered_in_US" operator="SET_TO">NO</action>
+                            <goto ref="output_Q5"/>
+                        </input>                      
+                        <default>
+            		<output>
+                			<prompt selectionType="RANDOM">
+                    			<item>
+                        		I am sorry, I did not understand
+                        		your question. Would you please clearly answer Yes or No?
+                    			</item>
+                		</prompt>
+            		</output>
+        		</default>
+                    </getUserInput>
+                </output>
+            </folder><!-- folder Q4 -->
+            
+            <folder label="Q5">
+                <output id="output_Q5">
+                    <prompt selectionType="RANDOM">
+                        <item>Does the Issuer make or is it presently proposing to make a public offering of its securities?</item>
+                    </prompt>
+                    <getUserInput>
+                        <input>
+                            <grammar>
+                                <item>$ Yes</item>
+                            </grammar>
+                            <output>
+                		<prompt selectionType="RANDOM">
+                    			<item>OK.</item>
+                		</prompt>
+                		<action varName="is_public_offer" operator="SET_TO">YES</action>                           
+                            	<goto ref="output_Q9"/>
+                	    </output>
+                        </input>
+                        <input>
+                            <grammar>
+                                <item>$ No</item>
+                            </grammar>
+                            <action varName="is_public_offer" operator="SET_TO">NO</action>
+                            <goto ref="output_Q6"/>
+                        </input>                      
+                        <default>
+            		<output>
+                			<prompt selectionType="RANDOM">
+                    			<item>
+                        		I am sorry, I did not understand
+                        		your question. Would you please clearly answer Yes or No?
+                    			</item>
+                		</prompt>
+            		</output>
+        		</default>
+                    </getUserInput>
+                </output>
+            </folder><!--folder Q5 -->
+            
+            <folder label="Q6">
+                <output id="output_Q6">
+                    <prompt selectionType="RANDOM">
+                        <item>Is any of the following statements true?
+
+the securities issued by the Issuer are beneficially owned by no more than one hundred persons; or
+
+the outstanding securities of the Issuer are owned by persons who, at the time of acquisition of such securities, are qualified purchasers.</item>
+                    </prompt>
+                    <getUserInput>
+                        <input>
+                            <grammar>
+                                <item>$ Yes</item>
+                            </grammar>
+                            <output>
+                		<prompt selectionType="RANDOM">
+                    			<item>OK. You are in principle covered fund. </item>
+                		</prompt>
+                		<action varName="is_owned_by_100" operator="SET_TO">YES</action>                           
+                            	<goto ref="output_Q7"/>
+                	    </output>
+                        </input>
+                        <input>
+                            <grammar>
+                                <item>$ No</item>
+                                <item>$ don’t know</item>                        
+                            </grammar>
+                            <action varName="is_owned_by_100" operator="SET_TO">NO</action>
+                            <goto ref="output_Q7"/>
+                        </input>                      
+                        <default>
+            		<output>
+                			<prompt selectionType="RANDOM">
+                    			<item>
+                        		I am sorry, I did not understand
+                        		your question. Would you please clearly answer Yes or No?
+                    			</item>
+                		</prompt>
+            		</output>
+        		</default>
+                    </getUserInput>
+                </output>
+            </folder> <!-- folder Q6 -->
+            
+            <folder label="Q7">
+                <output id="output_Q7">
+                    <prompt selectionType="RANDOM">
+                        <item>Is the Issuer:
+a US banking institution; or
+a non-US banking institution that is:
+regulated as such in the country in which it was incorporated or organised; and
+is engaged substantially in commercial banking activity; and
+is not operated for purposes of evading the (US) Investment Company Act of 1940?</item>
+                    </prompt>
+                    <getUserInput>
+                        <input>
+                            <grammar>
+                                <item>$ Yes</item>
+                            </grammar>
+                            <output>
+                		<prompt selectionType="RANDOM">
+                    			<item>
+1. pop-up or new screen with form requesting:
+full legal name of Issuer;
+Legal Entity Identifier of Issuer; and
+documentation in support [to be attached] (including evidence of Issuer’s banking entity status, offering documents, communications with, or certificates from the Issuer).
+2. Generate confirmation (with a reference number) that the information has been forwarded to [internal control department/ compliance department] for validation and authorization, stating that the respondent will receive an answer shortly.
+3. An automatic email is generated with the information in 1 attached and sent to [internal control department/ compliance department] with the title “Covered Funds Control: Permitted Investment (Not a Covered Fund: Banking Entity)” and the following paragraph in the body:
+“[Name] ([email address]), from [Unit, Department or Trading Desk] (the “Requester”) requests authorization to transact with [full legal name of Issuer], LEI [Legal Entity Identifier of Issuer] (“Issuer”), on the basis that the Issuer is a banking entity and is therefore not a covered fund pursuant to the Volcker Rule.
+Evidence in support attached.
+Ref.[reference number here]”
+4. If the evidence in support is correct and sufficient and there are no other reasons to deny the request, the [internal control department/compliance department] should authorize the transaction. Perhaps to do that the automatically generated email will have “authorize”/”deny” buttons that will trigger an automatic response to the requester and their boss?</item>
+                		</prompt>
+                		<action varName="is_US_banking_institution" operator="SET_TO">YES</action>                           
+                            	<goto ref="output_end"/>
+                	    </output>
+                        </input>
+                        <input>
+                            <grammar>
+                                <item>$ No</item>
+                            </grammar>
+                            <action varName="is_US_banking_institution" operator="SET_TO">NO</action>
+                            <goto ref="output_Q8"/>
+                        </input>                      
+                        <default>
+            		<output>
+                			<prompt selectionType="RANDOM">
+                    			<item>
+                        		I am sorry, I did not understand
+                        		your question. Would you please clearly answer Yes or No?
+                    			</item>
+                		</prompt>
+            		</output>
+        		</default>
+                    </getUserInput>
+                </output>
+            </folder><!-- folder Q7 -->
+            
+            <folder label="Q9">
+                <output id="output_Q9">
+                    <prompt selectionType="RANDOM">
+                        <item>s the Issuer a private investment enterprise in which funds contributed by a number of persons are combined for the purpose of trading any of the following?:
+
+(a)  futures contracts, options on futures, retail off-exchange foreign exchange contracts or swaps, or to invest in another commodity pool; and/or
+
+(b)  agreements, contracts, or transaction agreements, contracts, or transactions in a currency other than USD that are:
+
+offered to, or entered into with, a US person that is not an eligible contract participant, and no investor in the Issuer is a US financial institution, a registered securities broker or dealer (other than in respect to securities futures) or an associated person of such broker or dealer, or a registered foreign exchange dealer that maintains an adjusted net capital equal to or in excess of USD20m; or
+
+offered to, or entered into with, the counterparty or a person acting in concert with the offeror or counterparty, on a leveraged or margined basis, or financed by the offeror on a similar basis; or
+
+entered into with, or offered to (even if not entered into with), a person that is not an eligible contract participant or eligible commercial entity; and/or
+
+entered into, or offered (even if not entered into), on a leveraged or margined basis, or financed by the offeror, the counterparty, or a person acting in concert with the offeror or counterparty on a similar basis; or
+
+an authorized commodity option under section 6c of Title 7 of the Commodity Exchange Act; or
+
+a leverage transaction authorized under section 23 of Title 7 of the Commodity Exchange Act.
+</item>
+                    </prompt>
+                    <getUserInput>
+                        <input>
+                            <grammar>
+                                <item>$ Yes</item>
+                            </grammar>
+                            <output>
+                		<prompt selectionType="RANDOM">
+                    			<item>OK</item>
+                		</prompt>
+                		<action varName="is_Commodity_pool" operator="SET_TO">YES</action>                           
+                            	<goto ref="output_Q10"/>
+                	    </output>
+                        </input>
+                        <input>
+                            <grammar>
+                                <item>$ No</item>
+                            </grammar>
+                            <output>
+                 		<prompt selectionType="RANDOM">
+                    			<item>1. pop-up or new screen with form requesting:
+full legal name of Issuer;
+Legal Entity Identifier of Issuer; and
+documentation in support of Issuer’s nature [to be attached] (including offering documents, communications with, or certificates from the Issuer or its manager).
+2. Generate confirmation (with a reference number) that the information has been forwarded to [internal control department/ compliance department] for validation and authorization, stating that the respondent will receive an answer shortly.
+3. An automatic email is generated with the information in 1 attached and sent to [internal control department/ compliance department] with the title “Covered Funds Control: Permitted Investment (Not a Covered Fund: No Investment Company and No Commodity Pool)” and the following paragraph in the body:
+“[Name] ([email address]), from [Unit, Department or Trading Desk] (the “Requester”) requests authorization to transact with [full legal name of Issuer], LEI [Legal Entity Identifier of Issuer] (“Issuer”), on the basis that the Issuer is neither an investment company subject to the Investment Company Act 1940 nor a Commodity Pool subject to the Commodity Exchange Act, and is therefore not a covered fund pursuant to the Volcker Rule.
+Evidence in support attached.
+Ref.[reference number here]”
+
+4. If the evidence in support is correct and sufficient and there are no other reasons to deny the request, the [internal control department/compliance department] should authorize the transaction. Perhaps to do that the automatically generated email will have “authorize”/”deny” buttons that will trigger an automatic response to the requester and their boss?</item>
+                		</prompt>                           
+                            	<action varName="is_Commodity_pool" operator="SET_TO">NO</action>
+                            	<goto ref="output_end"/>
+                            </output>
+                        </input>                      
+                        <default>
+            		<output>
+                			<prompt selectionType="RANDOM">
+                    			<item>
+                        		I am sorry, I did not understand
+                        		your question. Would you please clearly answer Yes or No?
+                    			</item>
+                		</prompt>
+            		</output>
+        		</default>
+                    </getUserInput>
+                </output>
+            </folder>
+            
+            <folder label="Q10">
+                <output id="output_Q10">
+                    <prompt selectionType="RANDOM">
+                        <item>Has the commodity pool operator claimed an exemption from registration with the CFTC; or
+is the commodity pool operator registered with the CFTC and substantially all participation units of the Issuer are owned by qualified eligible persons under 17 CFR 4.7(a)(2) and (3)?</item>
+                    </prompt>
+                    <getUserInput>
+                        <input>
+                            <grammar>
+                                <item>$ Yes</item>
+                            </grammar>
+                            <output>
+                		<prompt selectionType="RANDOM">
+                    			<item>
+Bot’s response:
+2. Generate confirmation (with a reference number) that the information has been forwarded to [internal control department/ compliance department] for validation and authorization, stating that the respondent will receive an answer shortly.
+</item>
+                		</prompt>
+                		<action varName="is_Q10" operator="SET_TO">YES</action>                           
+                            	<goto ref="output_Q11"/>
+                	    </output>
+                        </input>
+                        <input>
+                            <grammar>
+                                <item>$ No</item>
+                            </grammar>
+                            <output>
+                            <prompt selectionType="RANDOM">
+                    			<item>1. pop-up or new screen with form requesting:
+full legal name of Issuer;
+Legal Entity Identifier of Issuer; and
+documentation in support of Issuer’s nature [to be attached] (including offering documents, communications with, or certificates from the Issuer or its manager).
+2. Generate confirmation (with a reference number) that the information has been forwarded to [internal control department/ compliance department] for validation and authorization, stating that the respondent will receive an answer shortly.
+3. An automatic email is generated with the information in 1 attached and sent to [internal control department/ compliance department] with the title “Covered Funds Control: Permitted Investment (Not a Covered Fund: No Investment Company and No Commodity Pool CF)” and the following paragraph in the body:
+“[Name] ([email address]), from [Unit, Department or Trading Desk] (the “Requester”) requests authorization to transact with [full legal name of Issuer], LEI [Legal Entity Identifier of Issuer] (“Issuer”), on the basis that the Issuer is neither an investment company subject to the Investment Company Act 1940 nor a Commodity Pool subject to the Commodity Exchange Act that qualifies as a covered fund pursuant to the Volcker Rule.
+
+The issuer is therefore not a covered fund.
+Evidence in support attached.
+Ref.[reference number here]”
+
+4. If the evidence in support is correct and sufficient and there are no other reasons to deny the request, the [internal control department/compliance department] should authorize the transaction. Perhaps to do that the automatically generated email will have “authorize”/”deny” buttons that will trigger an automatic response to the requester and their boss?</item>
+                		</prompt>
+                            <action varName="is_Q10" operator="SET_TO">NO</action>
+                            <goto ref="output_end"/>
+                            </output>
+                        </input>                      
+                        <default>
+            		<output>
+                			<prompt selectionType="RANDOM">
+                    			<item>
+                        		I am sorry, I did not understand
+                        		your question. Would you please clearly answer Yes or No?
+                    			</item>
+                		</prompt>
+            		</output>
+        		</default>
+                    </getUserInput>
+                </output>
+            </folder>
+            
+            <folder label="Q11">
+                <output id="output_Q11">
+                    <prompt selectionType="RANDOM">
+                        <item>Is any of the following statements true?
+Your entity has or will have:
+
+any equity or partnership participation in the Issuer; or
+the right to participate in the selection or removal of a general partner, managing member, member of the board of directors or trustees, investment manager, investment adviser, or commodity trading advisor of the Issuer (excluding the rights of a creditor to exercise remedies upon the occurrence of an event of default or an acceleration event); or
+the right to receive a share of the income, gains or profits of the Issuer; or
+
+the right to receive the underlying assets of the Issuer after all other interests have been redeemed and/or paid in full (excluding the rights of a creditor to exercise remedies upon the occurrence of an event of default or an acceleration event); or
+
+the right to receive all or a portion of excess spread (i.e., the positive difference, if any, between the aggregate interest payments received from the underlying assets of the Issuer and the aggregate interest paid to the holders of other outstanding interests); or
+
+the amounts payable by the Issuer to your entity subject to reductions in case of losses arising from the underlying assets of the Issuer (e.g., allocation of losses, write-downs or charge-offs of the outstanding principal balance, or reductions in the amount of interest due and payable); or
+
+the right to receive income on a pass-through basis from the Issuer, or a rate of return that is determined by reference to the performance of the underlying assets of the Issuer; or
+
+any synthetic right to have, receive, or be allocated any of the rights in subparagraphs (b) through (g) of this question.</item>
+                    </prompt>
+                    <getUserInput>
+                        <input>
+                            <grammar>
+                                <item>$ Yes</item>
+                            </grammar>
+                            <output>
+                		<prompt selectionType="RANDOM">
+                    			<item>ok</item>
+                		</prompt>
+                		<action varName="ownership_interest" operator="SET_TO">YES</action>                           
+                            	<goto ref="output_Q12"/>
+                	    </output>
+                        </input>
+                        <input>
+                            <grammar>
+                                <item>$ No</item>
+                            </grammar>
+                            <action varName="ownership_interest" operator="SET_TO">NO</action>
+                            <goto ref="output_Q13"/>
+                        </input>                      
+                        <default>
+            		<output>
+                			<prompt selectionType="RANDOM">
+                    			<item>
+                        		I am sorry, I did not understand
+                        		your question. Would you please clearly answer Yes or No?
+                    			</item>
+                		</prompt>
+            		</output>
+        		</default>
+                    </getUserInput>
+                </output>
+            </folder>
+            
+            <folder label="Q12">
+                <output id="output_Q12">
+                    <prompt selectionType="RANDOM">
+                        <item>Are all of the following statements true?
+
+your entity serves as investment manager, investment adviser, commodity trading advisor, or other service provider; and
+
+the sole purpose and effect of your entity’s ownership in the Issuer is as performance compensation for the investment management, investment advisory, commodity trading advisory, or other services provided to the Issuer; and
+
+the terms of the ownership interest provide that your entity (or employee or former employee thereof) may be obligated to return profits previously received; and
+
+all such profit, once allocated, is distributed to the entity (or employee or former employee thereof), or retained by the Issuer for the sole purpose of establishing a provision for subsequent losses of the Issuer, and such undistributed profit allocated to your entity (or employee or former employee thereof) does not share in the subsequent investment gains of the Issuer; and
+
+the full investment your entity made in the Issuer are below three per cent of the value of the Issuer; and
+
+the interest owned by your entity is not transferable, except to an affiliate, or to an employee of either, to immediate family members, or through the intestacy, of the employee or former employee, or in connection with a sale of the business that gave rise to the restricted profit interest by your entity (or employee or former employee thereof) to an unaffiliated party that provides investment management, investment advisory, commodity trading advisory, or other services to the Issuer.
+</item>
+                    </prompt>
+                    <getUserInput>
+                        <input>
+                            <grammar>
+                                <item>$ Yes</item>
+                            </grammar>
+                            <output>
+                		<prompt selectionType="RANDOM">
+                    			<item>ok</item>
+                		</prompt>
+                		<action varName="is_Restricted_profit_interest." operator="SET_TO">YES</action>                           
+                            	<goto ref="output_Q13"/>
+                	    </output>
+                        </input>
+                        <input>
+                            <grammar>
+                                <item>$ No</item>
+                            </grammar>
+                            <action varName="is_Restricted_profit_interest" operator="SET_TO">NO</action>
+                            <goto ref="output_Q13"/>
+                        </input>                      
+                        <default>
+            		<output>
+                			<prompt selectionType="RANDOM">
+                    			<item>
+                        		I am sorry, I did not understand
+                        		your question. Would you please clearly answer Yes or No?
+                    			</item>
+                		</prompt>
+            		</output>
+        		</default>
+                    </getUserInput>
+                </output>
+            </folder>
+            
+            <folder label="Q13">
+                <output id="output_Q13">
+                    <prompt selectionType="RANDOM">
+                        <item>Is any of the following statements true?
+Your entity or any affiliate:
+
+serves as a general partner, managing member, trustee or commodity pool operator in respect of the Issuer; or
+
+exercises investment discretion in respect of the Issuer; or
+
+in any manner selects or to controls a majority of the directors, trustees, or management of the Issuer; or
+
+has employees, officers, directors or agents that constitute a majority of the directors, trustees, or management of the Issuer; or
+
+shares with a covered fund, for corporate, marketing, promotional, or other purposes, the same name or a variation of the same name.
+ </item>
+                    </prompt>
+                    <getUserInput>
+                        <input>
+                            <grammar>
+                                <item>$ Yes</item>
+                            </grammar>
+                            <output>
+                		<prompt selectionType="RANDOM">
+                    			<item>ok</item>
+                		</prompt>
+                		<action varName="is_sponsorship" operator="SET_TO">YES</action>                           
+                            	<goto ref="output_Q14"/>
+                	    </output>
+                        </input>
+                        <input>
+                            <grammar>
+                                <item>$ No</item>
+                            </grammar>
+                            <action varName="is_sponsorship" operator="SET_TO">NO</action>
+                            <goto ref="output_end"/>
+                        </input>                      
+                        <default>
+            		<output>
+                			<prompt selectionType="RANDOM">
+                    			<item>
+                        		I am sorry, I did not understand
+                        		your question. Would you please clearly answer Yes or No?
+                    			</item>
+                		</prompt>
+            		</output>
+        		</default>
+                    </getUserInput>
+                </output>
+            </folder>
+            
+            <folder label="Q14">
+                <output id="output_Q14">
+                    <prompt selectionType="RANDOM">
+                        <item>Is any of the following statements true?
+Your entity serves directly or indirectly as:
+
+investment manager; or
+
+investment adviser, or
+
+commodity trading advisor
+
+to the Issuer.</item>
+                    </prompt>
+                    <getUserInput>
+                        <input>
+                            <grammar>
+                                <item>$ Yes</item>
+                            </grammar>
+                            <output>
+                		<prompt selectionType="RANDOM">
+                    			<item>ok</item>
+                		</prompt>
+                		<action varName="is_Q14" operator="SET_TO">YES</action>                           
+                            	<goto ref="output_Q15"/>
+                	    </output>
+                        </input>
+                        <input>
+                            <grammar>
+                                <item>$ No</item>
+                            </grammar>
+                            <action varName="is_Q14" operator="SET_TO">NO</action>
+                            <goto ref="output_Q15"/>
+                        </input>                      
+                        <default>
+            		<output>
+                			<prompt selectionType="RANDOM">
+                    			<item>
+                        		I am sorry, I did not understand
+                        		your question. Would you please clearly answer Yes or No?
+                    			</item>
+                		</prompt>
+            		</output>
+        		</default>
+                    </getUserInput>
+                </output>
+            </folder>
+            
+            <folder label="Q15">
+                <output id="output_Q15">
+                    <prompt selectionType="RANDOM">
+                        <item>Super 23A prohibition.
+Is any of the following statements true?:
+Your entity has entered into, or proposes to enter into one or more of the following transactions with the Issuer: 
+a loan or extension of credit to such covered fund, including a purchase of assets subject to an agreement to repurchase; and/or
+a purchase of or an investment in securities issued by such covered fund; and/or
+a purchase of assets from such covered fund; and/or
+the acceptance of securities or other debt obligations issued by such covered fund as collateral for a loan or extension of credit to any person or company; and/or
+the issuance of a guarantee, acceptance, or letter of credit, including an endorsement or standby letter of credit, on behalf of such covered fund; and/or
+a transaction with such covered fund that involves the borrowing or lending of securities, to the extent that the transaction causes your entity or a subsidiary to have credit exposure to such covered fund; and/or
+a derivative transaction with such covered fund, to the extent that the transaction causes your entity or a subsidiary to have credit exposure to such covered fund?</item>
+                    </prompt>
+                    <getUserInput>
+                        <input>
+                            <grammar>
+                                <item>$ Yes</item>
+                            </grammar>
+                            <output>
+                		<prompt selectionType="RANDOM">
+                    			<item>1. Pop up or new screen with form requesting:
+full legal name of Issuer;
+Legal Entity Identifier of Issuer;
+documentation in support of Issuer’s nature [to be attached] (including offering documents, communications with, or certificates from the Issuer or its manager); and
+a reasonably detailed explanation of the proposed investment and the role to be played by the respondent’s entity.
+2. Display the following message on the screen (with reference number):
+“Prohibited activity (covered transaction) – cannot proceed
+[Name of Issuer], [Legal Entity Identifier] has been classified as a covered fund.
+The proposed transaction with such covered fund entails entering into a covered transaction (Super 23A), which is prohibited pursuant to the Volcker Rule.”
+3. An automatic email is generated with the information in 1 attached and sent to [internal control department/ compliance department] with the title “Covered Funds Control: Prohibited Activity - ([Ownership] [Ownership, Sponsorship] [Sponsorship] and Covered Transaction)” and the following paragraph in the body:
+“The authorization requested by [Name] ([email address]), from [Unit, Department or Trading Desk] (the “Requester”) to transact with [full legal name of Issuer], LEI [Legal Entity Identifier of Issuer] (“Issuer”), has been denied on the grounds that:
+
+The Issuer is a covered fund under the Volcker Rule and the requested transaction entails [the acquisition of an ownership interest in] [the acquisition of an ownership interest in, and sponsorship of] [sponsorship of] such covered fund, as well as entering into a covered transaction (Super 23A), which is prohibited pursuant to the Volcker Rule.”
+
+Evidence in support attached.
+
+Ref.[reference number here]”</item>
+                		</prompt>
+                		<action varName="is_Super_23A_prohibition" operator="SET_TO">YES</action>                           
+                            	<goto ref="output_end"/>
+                	    </output>
+                        </input>
+                        <input>
+                            <grammar>
+                                <item>$ No</item>
+                            </grammar>
+                            <output>
+                                    <prompt selectionType="RANDOM">
+                    			<item>OUTCOME 1: If the respondent replied “yes” to question 11 and “no” to question 12 and/or “yes” to question 13 and/or “yes” to question 14 (i.e., there is ownership and/or sponsorship or quasi-sponsorship): go to [23B].
+OUTCOME 2: If the respondent replied “no” to question 11, “no” to question 13 and “no” to question 14, or “yes” to question 11, “yes” to question 12, “no” to question 13 and “no” to question 14 (i.e., no ownership, no sponsorship and no quasi-sponsorship):</item>
+                		</prompt>
+                            <action varName="is_Super_23A_prohibition" operator="SET_TO">NO</action>
+                            <goto ref="output_end"/>
+                             </output>
+                        </input>                      
+                        <default>
+            		<output>
+                			<prompt selectionType="RANDOM">
+                    			<item>
+                        		I am sorry, I did not understand
+                        		your question. Would you please clearly answer Yes or No?
+                    			</item>
+                		</prompt>
+            		</output>
+        		</default>
+                    </getUserInput>
+                </output>
+            </folder>
+            
+            <folder label='end'>
+                <output id='output_end'>
+                <prompt selectionType="RANDOM">
+                    <item>Thanks for using Legalbot, bye!</item>
+                </prompt>
+            </output>
+            </folder>
+            
+        </folder> <!-- folder Library -->
+        
+    </flow>
+    
+    <variables>
+        <var_folder name="Home">
+            <var name="is_US_bank" type="YESNO"/>
+            <var name="is_security" type="YESNO"/>
+            <var name="is_security_and" type="YESNO"/>
+            <var name="is_registered_in_US" type="YESNO"/>
+            <var name="is_public_offer" type="YESNO" description="The user's zip code"/>
+            <var name="is_Commodity_pool" type="YESNO" description="What type of pizza the user has ordered"/>
+            <var name="is_Q10" type="YESNO"/>
+            <var name="ownership_interest" type="YESNO"/>
+        </var_folder>
+    </variables>
+    
+</dialog>

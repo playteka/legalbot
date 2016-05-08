@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- New XML document created with EditiX XML Editor (http://www.editix.com) at Sat Apr 09 07:51:22 CEST 2016 -->
+
+<dialog xsi:noNamespaceSchemaLocation="WatsonDialogDocument_1.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <flow>
+    <folder label="Main">
+            <output>
+                <prompt selectionType="RANDOM">
+                    <item>Hello, welcome to Legalbot!</item>
+                </prompt>
+                <goto ref="output_Q1"/>
+            </output>
+     </folder>
+     
+     <folder label="Library">
+         
+      <% for(var i=0; i<questions.length; i++) { %> 
+  
+        <folder label="<%=questions[i].question%>">
+                <output id="output_<%=questions[i].question%>">
+                    <prompt >
+                        	<item><%=questions[i].question%></item>
+		            </prompt>
+                    <getUserInput>
+                        <input>
+                            <grammar>
+                                <item>$ Yes</item>
+                            </grammar>
+                            <action varName="is_<%=questions[i].question%>" operator="SET_TO">YES</action>
+                            <goto ref="output_<%=questions[i].yes%>"/>
+                        </input>
+                        <input>
+                            <grammar>
+                                <item>$ No</item>
+                            </grammar>
+                            <action varName="is_<%=questions[i].question%>" operator="SET_TO">NO</action>
+                            <goto ref="output_<%=questions[i].no%>"/>
+                        </input>                      
+                        <default>
+            		<output>
+                			<prompt selectionType="RANDOM">
+                    			<item>
+                        		I am sorry, I did not understand
+                        		your question. Would you please clearly answer Yes or No?
+                    			</item>
+                			</prompt>
+            		</output>
+            		<goto ref="output_<%=questions[i].question%>"/>
+        		</default>
+                    </getUserInput>
+                </output>
+            </folder> <!-- folder Q1 -->
+            
+            <% } %>       
+            
+            <% for(var i=0; i<ends.length; i++) { %> 
+            <folder label='end'>
+                <output id='output_<%=ends[i].question%>'>
+                <prompt selectionType="RANDOM">
+                    <item><%=ends[i].question%></item>
+                </prompt>
+            </output>
+            </folder>
+            
+            <% } %> 
+                  
+            
+        </folder> <!-- folder Library -->
+        
+    </flow>
+    
+    <variables>
+        <var_folder name="Home">
+            <% for(var i=0; i<questions.length; i++) {%>
+                <var name="is_<%=questions[i].question%>" type="YESNO"/>
+            <% } %>
+        </var_folder>
+    </variables>
+    
+</dialog>
